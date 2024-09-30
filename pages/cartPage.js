@@ -20,7 +20,7 @@ class CartPage {
       basketItemTitle: '.basket-item-title',
       basketItemPrice: '.basket-item-price',
       basketPrice: '.basket_price',
-      paginationNextPage: '.pagination .page-item:not(.active) .page-link',
+      paginationNextPage: '.page-item:not(.active)',
       quantityInput: '//input[@name="product-enter-count"]',
     };
 
@@ -187,6 +187,7 @@ class CartPage {
       console.log('Переход на следующую страницу');
       await nextPageButton.first().click();
       await this.page.waitForTimeout(3000);
+      await this.page.evaluate(() => window.scrollTo(0, 0));
     } else {
       console.log('Нет больше страниц');
     }
