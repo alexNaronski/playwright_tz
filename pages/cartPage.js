@@ -40,7 +40,8 @@ class CartPage {
     await this.page.click(this.selectors.clearCartButton);
     await this.waitForResponse([
       'https://enotes.pointschool.ru/basket/clear',
-      'https://enotes.pointschool.ru/basket/get']);
+      'https://enotes.pointschool.ru/basket/get'
+    ]);
   }
 
   async manageCartState() {

@@ -16,7 +16,7 @@ class LoginPage {
       if (isEnabled) {
         await this.page.click(this.loginButton);
       } else {
-        throw new Error('Login button is disabled.');
+        throw new Error('Кнопка логина задизейблина');
       }
     }
   }
