@@ -14,14 +14,14 @@ test.describe('Cart tests', () => {
     await cartPage.manageCartState();
   });
 
-  test('Переход в пустую корзину', async ({ page }) => {
+  test('Переход в пустую корзину', async ({ }) => {
     await cartPage.openCart();
     await cartPage.checkDropdownVisibility();
     await cartPage.goToCart();
     await cartPage.verifyCartURL('/basket');
   });
 
-  test('Переход в корзину с 1 неакционным товаром', async ({ page }) => {
+  test('Переход в корзину с 1 неакционным товаром', async ({ }) => {
     await cartPage.buyFirstNonDiscountedProduct();
     await cartPage.checkCartItemCount(1);
     await cartPage.openCart();
@@ -31,7 +31,7 @@ test.describe('Cart tests', () => {
     await cartPage.verifyProductsInCartPage();
   });
 
-  test('Переход в корзину с 1 акционным товаром', async ({ page }) => {
+  test('Переход в корзину с 1 акционным товаром', async ({ }) => {
     await cartPage.applyDiscountFilter();
     await cartPage.buyFirstDiscountedProduct();
     await cartPage.checkCartItemCount(1);
@@ -42,7 +42,7 @@ test.describe('Cart tests', () => {
     await cartPage.verifyProductsInCartPage();
   });
 
-  test('Переход в корзину с 9 разными товарами', async ({ page }) => {
+  test('Переход в корзину с 9 разными товарами', async ({ }) => {
     await cartPage.applyDiscountFilter();
     await cartPage.buyFirstDiscountedProduct();
     await cartPage.checkCartItemCount(1);
@@ -56,7 +56,7 @@ test.describe('Cart tests', () => {
     await cartPage.verifyProductsInCartPage();
   });
 
-  test('Переход в корзину с 9 акционными товарами одного наименования', async ({ page }) => {
+  test('Переход в корзину с 9 акционными товарами одного наименования', async ({ }) => {
     await cartPage.buyDiscountedProductWithQuantity(9);
     await cartPage.checkCartItemCount(9);
     await cartPage.openCart();

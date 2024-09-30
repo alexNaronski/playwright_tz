@@ -7,12 +7,12 @@ class CartPage {
       cart: '#dropdownBasket',
       goToCartButton: '//a[contains(@class, "btn-primary") and contains(@href, "/basket")]',
       clearCartButton: '//div[contains(@class, "actionClearBasket")]//a',
-      dropdownVisibility: '//div[contains(@class, "dropdown-menu-right") and contains(@class, "show")]',
-      basketItemCount: '//span[contains(@class, "basket-count-items")]',
+      dropdownVisibility: '.dropdown-menu-right.show',
+      basketItemCount: '.basket-count-items',
       discountFilterInput: '//input[@name="is-discount"]',
-      nonDiscountedProduct: '.note-item.card.h-100:not(.hasDiscount)',
-      discountedProduct: '.note-item.card.h-100.hasDiscount',
-      product: '.note-item.card.h-100',
+      nonDiscountedProduct: '//div[contains(@class, "note-item") and contains(@class, "card") and not(contains(@class, "hasDiscount"))]',
+      discountedProduct: '//div[contains(@class, "note-item") and contains(@class, "card") and contains(@class, "hasDiscount")]',
+      product: '//div[contains(@class, "note-item") and contains(@class, "card")]',
       buyButton: '.actionBuyProduct',
       productName: '.product_name',
       productPrice: '.product_price',
@@ -21,7 +21,7 @@ class CartPage {
       basketItemPrice: '.basket-item-price',
       basketPrice: '.basket_price',
       paginationNextPage: '.pagination .page-item:not(.active) .page-link',
-      quantityInput: 'input[name="product-enter-count"]',
+      quantityInput: '//input[@name="product-enter-count"]',
     };
 
     this.addedProducts = new Set();
@@ -46,26 +46,26 @@ class CartPage {
   async manageCartState() {
     const cartItemCount = await this.getCartItemCount();
     const count = parseInt(cartItemCount, 10);
-  
+
     if (count === 0) {
       console.log('Ничего не делаем');
       return;
     }
-  
+
     if (count === 9) {
       console.log('Добавляем ещё один товар, чтоб было 10');
       await this.buyFirstNonDiscountedProduct();
       await this.checkCartItemCount(10);
     }
-  
+
     console.log('Открываем корзину и чистим её');
     await this.openCart();
     await this.clearCart();
   }
-  
+
 
   async waitForResponse(urls) {
-    await Promise.all(urls.map(url => 
+    await Promise.all(urls.map(url =>
       this.page.waitForResponse(response => response.url() === url && response.status() === 200)
     ));
   }
@@ -75,7 +75,6 @@ class CartPage {
   }
 
   async checkCartItemCount(expectedCount) {
-    await this.page.waitForTimeout(2000)
     const cartCount = await this.getCartItemCount();
     expect(cartCount).toBe(expectedCount.toString());
   }
@@ -237,7 +236,7 @@ class CartPage {
     await this.verifyTotalPrice();
   }
 
-  
+
 
   async verifyPrice(cartProductPrice, expectedPrice) {
     const isDiscounted = expectedPrice.includes('-');
