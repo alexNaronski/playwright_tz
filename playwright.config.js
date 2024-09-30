@@ -5,7 +5,7 @@ export default defineConfig({
   retries: 0,
   timeout: 45000,
   use: {
-    headless: true,
+    headless: false,
     viewport: { width: 1280, height: 720 },
     baseURL: 'https://enotes.pointschool.ru',
     actionTimeout: 35000,

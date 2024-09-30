@@ -5,11 +5,11 @@ class CartPage {
     this.page = page;
     this.selectors = {
       cart: '#dropdownBasket',
-      goToCartButton: 'a.btn.btn-primary.btn-sm.ml-auto[href="/basket"]',
-      clearCartButton: '.actionClearBasket a',
-      dropdownVisibility: '.dropdown-menu-right.show',
-      basketItemCount: '.basket-count-items',
-      discountFilterInput: 'input[name="is-discount"]',
+      goToCartButton: '//a[contains(@class, "btn-primary") and contains(@href, "/basket")]',
+      clearCartButton: '//div[contains(@class, "actionClearBasket")]//a',
+      dropdownVisibility: '//div[contains(@class, "dropdown-menu-right") and contains(@class, "show")]',
+      basketItemCount: '//span[contains(@class, "basket-count-items")]',
+      discountFilterInput: '//input[@name="is-discount"]',
       nonDiscountedProduct: '.note-item.card.h-100:not(.hasDiscount)',
       discountedProduct: '.note-item.card.h-100.hasDiscount',
       product: '.note-item.card.h-100',
@@ -75,6 +75,7 @@ class CartPage {
   }
 
   async checkCartItemCount(expectedCount) {
+    await this.page.waitForTimeout(2000)
     const cartCount = await this.getCartItemCount();
     expect(cartCount).toBe(expectedCount.toString());
   }
