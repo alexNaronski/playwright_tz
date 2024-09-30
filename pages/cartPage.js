@@ -219,6 +219,25 @@ class CartPage {
     await this.verifyTotalPrice();
   }
 
+  async verifyProductsInCartPage() {
+    await this.page.waitForSelector(this.selectors.basketItem);
+    const basketItems = await this.page.locator(this.selectors.basketItem);
+
+    for (let i = 0; i < basketItems.length; i++) {
+      const cartProductName = await basketItems.nth(i).locator(this.selectors.basketItemTitle).innerText();
+      expect(cartProductName.trim()).toBe([...this.addedProducts][i].trim());
+
+      const cartProductPrice = await basketItems.nth(i).locator(this.selectors.basketItemPrice).innerText();
+      const expectedPrice = this.expectedPrices[i];
+
+      await this.verifyPrice(cartProductPrice, expectedPrice);
+    }
+
+    await this.verifyTotalPrice();
+  }
+
+  
+
   async verifyPrice(cartProductPrice, expectedPrice) {
     const isDiscounted = expectedPrice.includes('-');
     if (isDiscounted) {

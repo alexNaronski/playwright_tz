@@ -28,7 +28,7 @@ test.describe('Cart tests', () => {
     await cartPage.verifyProductsInCart();
     await cartPage.goToCart();
     await cartPage.verifyCartURL('/basket');
-    await cartPage.verifyProductsInCart();
+    await cartPage.verifyProductsInCartPage();
   });
 
   test('Переход в корзину с 1 акционным товаром', async ({ page }) => {
@@ -39,7 +39,7 @@ test.describe('Cart tests', () => {
     await cartPage.verifyProductsInCart();
     await cartPage.goToCart();
     await cartPage.verifyCartURL('/basket');
-    await cartPage.verifyProductsInCart();
+    await cartPage.verifyProductsInCartPage();
   });
 
   test('Переход в корзину с 9 разными товарами', async ({ page }) => {
@@ -53,7 +53,7 @@ test.describe('Cart tests', () => {
     await cartPage.verifyProductsInCart();
     await cartPage.goToCart();
     await cartPage.verifyCartURL('/basket');
-    await cartPage.verifyProductsInCart();
+    await cartPage.verifyProductsInCartPage();
   });
 
   test('Переход в корзину с 9 акционными товарами одного наименования', async ({ page }) => {
@@ -63,6 +63,6 @@ test.describe('Cart tests', () => {
     await cartPage.verifyProductsInCart();
     await cartPage.goToCart();
     await cartPage.verifyCartURL('/basket');
-    await cartPage.verifyProductsInCart();
+    await cartPage.verifyProductsInCartPage();
   });
 });
