@@ -22,6 +22,7 @@ class CartPage {
       basketPrice: '.basket_price',
       paginationNextPage: '.page-item:not(.active)',
       quantityInput: '//input[@name="product-enter-count"]',
+      productCount: '.product_count',
     };
 
     this.addedProducts = new Set();
@@ -114,9 +115,23 @@ class CartPage {
   }
 
   async getFirstNonDiscountedProduct() {
-    await this.page.waitForSelector(this.selectors.nonDiscountedProduct);
-    return await this.page.locator(this.selectors.nonDiscountedProduct).first();
+    while (true) {
+      const productsOnPage = await this.page.locator(this.selectors.nonDiscountedProduct).count();
+  
+      if (productsOnPage > 0) {
+        return await this.page.locator(this.selectors.nonDiscountedProduct).first();
+      } else {
+        console.log('Нет товаров без скидки на текущей странице.');
+        await this.goToNextPageIfNeeded();
+        const nextPageButton = this.page.locator(this.selectors.paginationNextPage);
+        if (await nextPageButton.count() === 0) {
+          console.log('Нет больше страниц с товарами без скидки.');
+          return null;
+        }
+      }
+    }
   }
+  
 
   async getFirstDiscountedProduct() {
     await this.page.waitForSelector(this.selectors.discountedProduct);
@@ -133,23 +148,48 @@ class CartPage {
     return priceMatch ? priceMatch[1].trim() : null;
   }
 
-  async buyDiscountedProductWithQuantity(quantity) {
-    const product = await this.getFirstDiscountedProduct();
-    const productName = await this.getProductName(product);
-    const discountedPrice = await this.getProductPrice(product);
+  async buyDiscountedProductWithQuantity(targetQuantity) {
+    let totalAddedQuantity = 0;
+  
+    while (totalAddedQuantity < targetQuantity) {
+      const product = await this.getFirstDiscountedProduct();
+      const productName = await this.getProductName(product);
+      const discountedPrice = await this.getProductPrice(product);
+      const availableQuantity = await this.getAvailableProductQuantity(product);
+  
+      if (availableQuantity < targetQuantity - totalAddedQuantity) {
+        console.log(`Недостаточно товара для продукта: ${productName} (доступно: ${availableQuantity}), пропускаем`);
+        await this.goToNextPageIfNeeded();
+        continue;
+      }
+  
+      const quantityToBuy = Math.min(availableQuantity, targetQuantity - totalAddedQuantity);
+      console.log(`Покупаем ${quantityToBuy} единиц товара: ${productName}`);
+  
+      const quantityInput = product.locator(this.selectors.quantityInput);
+      await quantityInput.fill(String(quantityToBuy));
+  
+      const buyButton = product.locator(this.selectors.buyButton);
+      await buyButton.click();
+  
+      this.addedProducts.add(productName);
+      this.expectedPrices.push(discountedPrice);
+  
+      totalAddedQuantity += quantityToBuy;
+      console.log(`Всего добавлено: ${totalAddedQuantity}/${targetQuantity}`);
+  
+      if (totalAddedQuantity >= targetQuantity) {
+        console.log('Достигнуто целевое количество товаров');
+        return;
+      }
+  
+      await this.goToNextPageIfNeeded();
+    }
+  }
 
-    const quantityInput = product.locator(this.selectors.quantityInput);
-    await quantityInput.fill(String(quantity));
-
-    const buyButton = product.locator(this.selectors.buyButton);
-    await buyButton.click();
-
-    this.addedProducts.add(productName);
-    this.expectedPrices.push(discountedPrice);
-
-    await this.page.waitForSelector(this.selectors.basketItemCount, { state: 'visible' });
-
-    return { productName, discountedPrice };
+  async getAvailableProductQuantity(product) {
+    const availableQuantity = await product.locator(this.selectors.productCount).innerText();
+    return parseInt(availableQuantity, 10) || 0;
   }
 
   async buyMultipleProducts(targetCount) {
